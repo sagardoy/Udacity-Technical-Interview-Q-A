@@ -1,0 +1,59 @@
+Write up an explanation for each question in a single separate text file (called "explanations.txt"). Your paragraph should not be a detailed walkthrough of the code you provided, but provide your reasoning behind decisions made in the code. For example, why did you use that data structure? You also need to explain the efficiency (time and space) of your solution.
+
+*** Question 1 ***
+Given two strings s and t, determine whether some anagram of t is a substring of s. For example: if s = "udacity" and t = "ad", then the function returns True. Your function definition should look like: question1(s, t) and return a boolean True or False.
+
+For this problem, the objective is to match each letter of t with a unique index within s. So, for each letter in t, I compare it to every letter. If there is a match and the index of the s-letter has not already been included in a list of matching indices, then the index is added to the indices list. This way, I don't worry about repeating letters. If a t-letter has no match in s, then the entire function returns false and where done. If the algorithm cycles through all letters in s and t and the length of the matching indices list is not equal to the length of t, then the algorithm returns false. Otherwise, it returns true.
+
+The best case scenario for this algorithm on time is O(1) where there there is no match of the t-letter within s; the worst runtime approaches O(TS) where T is the length of t and S is the length of S. In general, the algorithm will run at O(Tlog(S)) time. Regarding memory space, the maximum space occupied by this algorithm is O(2T + S) where T represents the lengths of both t and the matching index list, and S is the length of S. 
+
+
+
+*** Question 2 ***
+Given a string a, find the longest palindromic substring contained in a. Your function definition should look like question2(a), and return a string.
+
+Palandromes are essentially patterns of letters and numbers by which the first half of the pattern is the mirror image of the second half. Therefore, for any substring of a string, you can easily assess whether or not the substring is a palandrome by comparing the 1st and nth letters, the 2nd and n-1th letters, etc. If the pairs are unequal, then the substring is not a palandrome. The question then becomes how do we determine which substrings to analyze first? 
+
+For that, we refer to the question and a little bit of logic - we're only looking for the largest palandromic substring. If we start from the largest possible substring and work down, using sliding and resizing of substring windows to change which substrings are being analyzed (not unlike the filters of a convolutional neural network), we can find what we're looking for quicker. We don't care about any other substrings once we find a substring that matches a palandromic pattern. If no palandrome substrings exist above one letter, the first letter of the string is returned. 
+
+
+
+*** Question 3 ***
+Given an undirected graph G, find the minimum spanning tree within G. A minimum spanning tree connects all vertices in a graph with the smallest possible total weight of edges. Your function should take in and return an adjacency list structured like this:
+
+{'A': [('B', 2)],
+ 'B': [('A', 2), ('C', 5)], 
+ 'C': [('B', 5)]}
+ 
+Vertices are represented as unique strings. The function definition should be question3(G).
+
+For this question, I organized unique vertices from minimum weight to maximum weight. Starting from the least-weighed vertex, I compared both nodes in a vertex to a list of nodes representing nodes we've already included in our spanning tree. If node1 xor node2 in the vertex returned true thereby suggesting a new node has been found, then the vertex would be added to the minimum spanning tree. We can do this because of how we presorted our list of vertices - this method will always return the shortest distance between the budding minimum spanning tree and a newly discovered node.
+
+Because we're looking for a minimum spanning tree, which is specifically defined by N-1 vertices where N is the number of nodes, we keep cycling through the algorithm until we've got N-1 vertices. Once we have our list of vertices in the minimum spanning tree, we recompile the list as an adjacency matrix in dictionary form and return it.  
+
+
+*** Question 4 ***
+Find the least common ancestor between two nodes on a binary search tree. The least common ancestor is the farthest node from the root that is an ancestor of both nodes. For example, the root is a common ancestor of all nodes on the tree, but if both nodes are descendents of the root's left child, then that left child might be the lowest common ancestor. You can assume that both nodes are in the tree, and the tree itself adheres to all BST properties. The function definition should look like question4(T, r, n1, n2), where T is the tree represented as a matrix, where the index of the list is equal to the integer stored in that node and a 1 represents a child node, r is a non-negative integer representing the root, and n1 and n2 are non-negative  integers representing the two nodes in no particular order. For example, one test case might be
+
+question4([[0, 1, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0],
+           [1, 0, 0, 0, 1],
+           [0, 0, 0, 0, 0]],
+          3,
+          1,
+          4)
+and the answer would be 3.
+
+For this question, I rely heavily on the particular structure of the binary search tree which says nodes only have 2 children and that the ordering of children to parent nodes is based on the values of the nodes (i.e. lower-value child nodes are always to the left of their ancestors; higher-value child nodes are always to the right of their ancestors. Knowing this, we can use the value of nodes to know when a search has found the least common ancestor and should terminate. Let node1 = min(n1, n2) and node2 = max(n1, n2) and p is a parent node. If p encounters the case where node1 <= p <= node2, then it's the least common ancestor. If node1 < node2 < p, then we should repeat our comparison on p's left child node; if p < node1 < node2, then we should repeat on p's right child node. Because of this iterative process, we can use recursion whereby the root node is simply just an ancestor node being compared to n1 and n2. The recursion stops when the least common ancestor is found. 
+
+
+*** Question 5 ***
+Find the element in a singly linked list that's m elements from the end. For example, if a linked list has 5 elements, the 3rd element from the end is the 3rd element. The function definition should look like question5(ll, m), where ll is the first node of a linked list and m is the "mth number from the end". You should copy/paste the Node class below to use as a representation of a node in the linked list. Return the value of the node at that position.
+
+class Node(object):
+  def __init__(self, data):
+    self.data = data
+    self.next = None  
+
+For this problem, I need to find the length of the linked list. The only way to do this is to start from the first node in the list and cycle through until we find a node with a next property equal to None, counting each node as Igo along. Once I've established the length of the linked list, I find the exact index I'm looking for by subtracting the reverse_index input from the length of the list. To return the data from the node at the index, cycle through the nodes until you've reached that node. Simply return the data within the node. 
